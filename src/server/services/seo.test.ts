@@ -124,9 +124,10 @@ describe("generated artefacts follow the resolved origin", () => {
 
     expect(graph[0]["@id"]).toBe("https://example.com/#website");
     expect(graph[0].url).toBe("https://example.com/");
-    expect(graph[0].publisher["@id"]).toBe("https://example.com/#organization");
-    expect(graph[1]["@id"]).toBe("https://example.com/#organization");
+    expect(graph[0].publisher["@id"]).toBe("https://example.com/#person");
+    expect(graph[1]["@type"]).toBe("Person");
+    expect(graph[1]["@id"]).toBe("https://example.com/#person");
     expect(graph[1].url).toBe("https://example.com/");
-    expect(graph[1].logo).toBe("https://example.com/og-image.png");
+    expect(graph[1].image).toBe("https://example.com/og-image.png");
   });
 });

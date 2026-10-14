@@ -1,17 +1,14 @@
-import { init as initNavMenu } from "@client/components/nav-menu";
-import { todoList } from "@client/components/todo-list";
-import { initializePage, registerPage } from "@client/page-lifecycle";
-import { init as initForms } from "@client/pages/forms";
-import * as ui from "@client/reactive";
+import { initHome } from "@client/pages/home";
+import { initSoftwareFactory } from "@client/pages/software-factory";
 
-registerPage("forms", { init: initForms });
+// One bundle for the whole site. Each page opts in by name, so a page that
+// needs no behaviour (an error page carries no bundle at all) costs nothing.
+const page = document.body.dataset.page;
 
-// Components bind to whichever page renders their data-component root, so
-// they register once here rather than per page.
-ui.registerComponent(todoList);
+if (page === "home") {
+  initHome();
+}
 
-// The nav is on every page, so it runs outside the per-data-page registry.
-initNavMenu();
-
-initializePage(document.body.dataset.page);
-ui.mount();
+if (page === "software-factory") {
+  initSoftwareFactory();
+}

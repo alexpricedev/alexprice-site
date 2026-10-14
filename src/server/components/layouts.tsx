@@ -9,23 +9,24 @@ import {
   siteStructuredData,
   siteUrl,
 } from "../services/seo";
-import type { User } from "../services/users";
-import { Logo } from "./logo";
-import { Nav } from "./nav";
-import { VerifyBanner } from "./verify-banner";
 
-// The site is dark-only (see `colorScheme: "dark"` on <html>), so theme-color
-// matches --color-bg from style.css rather than shipping light/dark variants.
-const THEME_COLOR = "#0a0a0b";
+// The two webfonts the design is built on. Loaded from Google Fonts with a
+// preconnect, which means the CSP has to allow fonts.googleapis.com (style) and
+// fonts.gstatic.com (font) — see utils/security-headers.ts.
+const FONTS_HREF =
+  "https://fonts.googleapis.com/css2?family=VT323&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;1,6..12,400&display=swap";
+
+// The site is dark-only (see `color-scheme: dark` in base.css), so theme-color
+// matches --bg from the dark palette rather than shipping light/dark variants.
+const THEME_COLOR = "#1E1B2E";
 
 const canonicalUrl = (path?: string): string =>
   path ? absolute(path) : siteUrl();
 
 /* The site is noindex unless `ALLOW_INDEXING=true` says otherwise, so the
    `noindex` prop is a page opting *out* on top of a default that already keeps
-   it out — a page that passes it (/login, /admin, an error page) stays noindex
-   after the switch opens the rest of the site up. See `indexingAllowed` in
-   services/seo.ts. */
+   it out — a page that passes it (an error page) stays noindex after the switch
+   opens the rest of the site up. See `indexingAllowed` in services/seo.ts. */
 const blocksIndexing = (noindex?: boolean): boolean =>
   noindex === true || !indexingAllowed();
 
@@ -36,7 +37,7 @@ interface HeadMetaProps {
   noindex?: boolean;
 }
 
-// Shared <head> essentials for both Layout and BaseLayout, so the two can't
+// Shared <head> essentials for both Layout and ErrorLayout, so the two can't
 // drift out of sync (e.g. one missing the description or canonical tag).
 function HeadMeta({
   title,
@@ -59,7 +60,11 @@ function HeadMeta({
       <meta name="color-scheme" content="dark" />
       <meta name="theme-color" content={THEME_COLOR} />
       <link rel="canonical" href={canonicalUrl(canonicalPath)} />
-      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <link
+        rel="icon"
+        type="image/svg+xml"
+        href={getAssetUrl("/favicon.svg")}
+      />
       <link
         rel="apple-touch-icon"
         sizes="180x180"
@@ -78,17 +83,32 @@ function HeadMeta({
         href="/favicon-16x16.png"
       />
       <link rel="manifest" href="/site.webmanifest" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossOrigin="anonymous"
+      />
+      <link rel="stylesheet" href={FONTS_HREF} />
       <link rel="stylesheet" href={getAssetUrl("/assets/main.css")} />
     </>
   );
 }
 
+// Shared site footer for the full Layout and the ErrorLayout.
+function SiteFooter() {
+  return (
+    <footer>
+      <span>© 2026 ALEX PRICE · INFINITE CHAPTERS LTD</span>
+      <span>BUILT BY HAND, RUN BY THE FACTORY</span>
+    </footer>
+  );
+}
+
 interface LayoutProps {
   title: string;
-  name: string;
+  page: string;
   children: ComponentChildren;
-  user?: User | null;
-  csrfToken?: string;
   description?: string;
   canonicalPath?: string;
   noindex?: boolean;
@@ -96,10 +116,8 @@ interface LayoutProps {
 
 export function Layout({
   title,
-  name,
+  page,
   children,
-  user,
-  csrfToken,
   description = SITE_DESCRIPTION,
   canonicalPath,
   noindex,
@@ -129,100 +147,51 @@ export function Layout({
           />
         )}
       </head>
-      {/* data-banner drives the body offset for the fixed banner. Set from the
-          same condition the component renders on, so the padding can't outlive
-          the bar it makes room for. */}
-      <body
-        data-page={name}
-        data-component="layout"
-        data-banner={
-          user && !user.email_verified_at ? "verify-email" : undefined
-        }
-      >
-        <VerifyBanner user={user} />
-        <header>
-          <a href="/" className="logo">
-            <Logo />
-            <span>Alex Price</span>
-          </a>
-          <Nav page={name} user={user} csrfToken={csrfToken} />
-        </header>
-        <main>{children}</main>
-        <SiteFooter />
+      <body data-page={page}>
+        <div className="wrap">
+          <header className="masthead">
+            <a className="brand" href="/">
+              <span className="bit" aria-hidden="true" />
+              {SITE_NAME}
+            </a>
+          </header>
+          {children}
+          <SiteFooter />
+        </div>
         <script type="module" src={getAssetUrl("/assets/main.js")} />
       </body>
     </html>
   );
 }
 
-// Shared site footer for the full Layout and the ErrorLayout.
-function SiteFooter() {
-  return (
-    <footer>
-      <a href="https://github.com/alexpricedev/alexprice-site">GitHub</a>
-    </footer>
-  );
-}
-
 interface ErrorLayoutProps {
   title: string;
   children: ComponentChildren;
-  nav?: boolean;
 }
 
-// Layout for error and maintenance pages (404, 500, 503). Deliberately ships NO
-// client JavaScript — no Lottie, no main bundle — so the page renders
-// instantly and stays legible even when the app is degraded or offline, the
-// spec's resilience baseline for error and 503 responses. Reuses the same
-// header/footer chrome as `Layout` for continuity, and is always noindex so
-// crawlers never treat an error body as real content.
-export function ErrorLayout({ title, children, nav = true }: ErrorLayoutProps) {
+// Layout for error pages (404, 500, 503). Deliberately ships NO client
+// JavaScript — the page renders instantly and stays legible even when the app is
+// degraded or offline, the spec's resilience baseline for error and 503
+// responses. Always noindex so crawlers never treat an error body as real
+// content.
+export function ErrorLayout({ title, children }: ErrorLayoutProps) {
   return (
     <html lang="en" style={{ colorScheme: "dark" }}>
       <head>
         <HeadMeta title={title} description={SITE_DESCRIPTION} noindex />
       </head>
-      <body data-page="error" data-component="layout">
-        <header>
-          <a href="/" className="logo">
-            <Logo />
-            <span>{SITE_NAME}</span>
-          </a>
-          {nav && <Nav page="" user={null} />}
-        </header>
-        <main>{children}</main>
-        <SiteFooter />
+      <body data-page="error">
+        <div className="wrap">
+          <header className="masthead">
+            <a className="brand" href="/">
+              <span className="bit" aria-hidden="true" />
+              {SITE_NAME}
+            </a>
+          </header>
+          <main>{children}</main>
+          <SiteFooter />
+        </div>
       </body>
-    </html>
-  );
-}
-
-interface BaseLayoutProps {
-  title: string;
-  children: ComponentChildren;
-  description?: string;
-  canonicalPath?: string;
-  noindex?: boolean;
-}
-
-export function BaseLayout({
-  title,
-  children,
-  description = SITE_DESCRIPTION,
-  canonicalPath,
-  noindex,
-}: BaseLayoutProps) {
-  return (
-    <html lang="en" style={{ colorScheme: "dark" }}>
-      <head>
-        <HeadMeta
-          title={title}
-          description={description}
-          canonicalPath={canonicalPath}
-          noindex={noindex}
-        />
-      </head>
-      <body>{children}</body>
     </html>
   );
 }

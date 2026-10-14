@@ -1,9 +1,9 @@
 version: 2
 
-# Billet is consumed by cloning or forking, so a fork gets these updates on its
-# own copy — there is no published package to update from. Both ecosystems are
-# grouped into a single weekly PR per ecosystem: this repo has three runtime
-# dependencies, and one PR per bump would be more review than signal.
+# This site is deployed from the repo, so dependency updates land here rather
+# than in a published package. Both ecosystems are grouped into a single weekly
+# PR per ecosystem: the runtime dependency set is small, and one PR per bump
+# would be more review than signal.
 updates:
   - package-ecosystem: bun
     directory: /

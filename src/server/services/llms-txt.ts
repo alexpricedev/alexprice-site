@@ -17,20 +17,15 @@ interface LlmsPage {
 const PAGES: LlmsPage[] = [
   {
     path: "/",
-    title: "Home",
-    description: "The personal site of Alex Price.",
+    title: "Alex Price",
+    description:
+      "Alex Price helps startups move from using coding agents to running them: a pipeline that turns tickets into reviewed pull requests, with humans at both ends.",
   },
   {
-    path: "/forms",
-    title: "Forms",
+    path: "/software-factory",
+    title: "Software factory",
     description:
-      "Server-rendered form handling with validation, CSRF protection, and progressive enhancement.",
-  },
-  {
-    path: "/todos",
-    title: "Todos",
-    description:
-      "A todo list backed by a shared service layer, exposed as HTML forms that work without JavaScript, in-place fragments when it is on, and a JSON API.",
+      "What a software factory is: a repeatable loop of AI agents that plan, build and review work, with people approving the plan and signing off the change.",
   },
 ];
 

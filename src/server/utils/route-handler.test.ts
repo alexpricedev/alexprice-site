@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createMockRequest } from "../test-utils/setup";
-import { createApiRouteHandler, createRouteHandler } from "./route-handler";
+import { createRouteHandler } from "./route-handler";
 
 const ok = () => new Response("ok");
 const url = "http://localhost:3000/anything";
@@ -49,25 +49,5 @@ describe("createRouteHandler", () => {
 
     expect(response.status).toBe(405);
     expect(response.headers.get("Allow")).toBe("POST");
-  });
-});
-
-describe("createApiRouteHandler", () => {
-  test("answers an unlisted method with the JSON error envelope", async () => {
-    const handler = createApiRouteHandler({ GET: ok });
-    const response = await handler(createMockRequest(url, "PUT"));
-
-    expect(response.status).toBe(405);
-    expect(response.headers.get("Allow")).toBe("GET, HEAD");
-    expect(response.headers.get("content-type")).toContain("application/json");
-
-    const body = (await response.json()) as { error: { code: string } };
-    expect(body.error.code).toBe("method_not_allowed");
-  });
-
-  test("still dispatches listed methods", async () => {
-    const handler = createApiRouteHandler({ GET: ok });
-
-    expect((await handler(createMockRequest(url))).status).toBe(200);
   });
 });

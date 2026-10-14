@@ -48,35 +48,11 @@
       }
     },
     {
-      "includes": ["src/client/base.css", "src/client/pages/home.css"],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noImportantStyles": "off"
-          }
-        }
-      }
-    },
-    {
       "includes": ["src/server/components/layouts.tsx"],
       "linter": {
         "rules": {
           "security": {
             "noDangerouslySetInnerHtml": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": [
-        "src/server/database/cli.ts",
-        "src/server/database/seed.ts",
-        "src/server/test-utils/bootstrap.ts"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noConsole": "off"
           }
         }
       }

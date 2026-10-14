@@ -1,11 +1,12 @@
 "$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
 
 [scripts]
-setup = "main_dir=\"$(cd \"$(git rev-parse --git-common-dir)/..\" && pwd)\" && cp \"$main_dir/.env\" \"$main_dir/.env.test\" . && bun install && bun run scripts/workspace.ts provision"
+setup = "main_dir=\"$(cd \"$(git rev-parse --git-common-dir)/..\" && pwd)\" && cp \"$main_dir/.env\" . && bun install && bun run scripts/workspace.ts provision"
+# Registers nothing to tear down — there is no per-workspace database — but the
+# hook stays wired so a future workspace resource has a place to clean up.
 archive = "bun run scripts/workspace.ts destroy"
-# Safe now that provision gives every workspace its own port and its own dev and
-# test databases. Without it, two workspaces running `bun run dev` fight over
-# port 3000 and two test runs truncate the same tables mid-suite.
+# Safe because provision gives every workspace its own port. Without it, two
+# workspaces running `bun run dev` fight over 3000.
 run_mode = "concurrent"
 
 [tasks.Run]
