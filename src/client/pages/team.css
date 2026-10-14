@@ -1,0 +1,112 @@
+/* Per-row role control: the select and its Save button sit on one line so the
+   table doesn't grow a row's height for every member. */
+.team-role-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Height comes from the control tokens; only the inline padding is trimmed,
+   because the row sits in a table column. */
+.team-role-form button {
+  padding-inline: 10px;
+  white-space: nowrap;
+}
+
+/* Both single-column forms on this page. .form-field carries no bottom margin,
+   so without the gap the submit button sits flush against the input above it,
+   and without the cap a one-word team name gets a card-wide field. */
+.team-invite,
+.team-create {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 420px;
+}
+
+/* The paragraph above the create form is part of the empty state, not the
+   form, so it gets its own separation rather than riding on the flex gap. */
+.team-create-intro {
+  margin-bottom: 20px;
+  max-width: 60ch;
+}
+
+/* /invites/accept is one sentence and one action, so it reads as a centred
+   block under the centred heading rather than as a left-aligned form. Inputs
+   and their labels stay left-aligned — a centred label floating above a
+   full-width field reads as decoration, not as the field's name. */
+.invite-form {
+  text-align: center;
+
+  .form-field {
+    text-align: left;
+  }
+}
+
+/* The remove confirmation, revealed by ?remove= and jumped to via
+   #confirm-remove. */
+.team-confirm {
+  border-color: var(--color-danger, #dc2626);
+}
+
+.team-confirm-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* At phone width the four columns don't fit the card: an email, the role form
+   and a long date are already wider than 390px before the action. Each row
+   becomes a small block instead — email, then role, then the date and the
+   action on one line — so the page never scrolls sideways. The header row is
+   hidden visually, so the date cell names itself through data-label. */
+@media (width <= 640px) {
+  .team-table {
+    display: block;
+
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    tbody {
+      display: block;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px 12px;
+      padding: 12px 0;
+      border-top: 1px solid var(--color-border);
+    }
+
+    td {
+      border-top: none;
+      padding: 0;
+    }
+
+    td:nth-child(-n + 2) {
+      grid-column: 1 / -1;
+    }
+
+    td:first-child {
+      overflow-wrap: anywhere;
+    }
+
+    td[data-label] {
+      color: var(--color-text-quaternary);
+    }
+
+    td[data-label]::before {
+      content: attr(data-label) " ";
+    }
+  }
+}
