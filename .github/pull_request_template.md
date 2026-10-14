@@ -1,18 +1,17 @@
 ## What & why
 
-<!-- The change, and the problem it solves. Link the issue or runbook section if there is one. -->
+<!-- The change, and the problem it solves. Link the issue if there is one. -->
 
 ## Checks CI can't run
 
 <!-- Delete the lines that don't apply. -->
 
 - [ ] Verified in the browser — CI has none
-- [ ] New client code: which of the three tiers in `CLAUDE.md` is it, and why not the one above it?
+- [ ] New page: a template in `src/server/templates/`, a controller in `src/server/controllers/app/`, and a route in `src/server/routes/app.tsx`
+- [ ] New page in the sitemap (`SITEMAP_PATHS` in `src/server/services/seo.ts`) and `src/server/services/llms-txt.ts`
+- [ ] New client behaviour registered in `src/client/main.ts` and its CSS `@import`ed in `src/client/style.css`
 - [ ] New third-party script has a CSP entry, an SRI `integrity` hash, and a `preconnect` in `layouts.tsx`
-- [ ] New page is registered in `client/main.ts` and its CSS `@import`ed in `client/style.css`
-- [ ] New table is added to `cleanupTestData` in `test-utils/helpers.ts`
-- [ ] Changed headers, cookies, metadata, or email delivery → the matching `runbooks/` doc is updated
-- [ ] Renamed or deleted a file the docs point at → `README.md`, `CLAUDE.md`, and `runbooks/` still match reality
+- [ ] Changed headers or metadata → `README.md` and `CLAUDE.md` still match reality
 
 ## Screenshots (optional)
 

@@ -44,16 +44,6 @@ describe("robots.txt Controller", () => {
     expect(body).toContain("Allow: /");
   });
 
-  test("disallows private surfaces for every group", async () => {
-    allowIndexing();
-    const body = await robotsTxt.index().text();
-
-    expect(body).toContain("Disallow: /admin");
-    expect(body).toContain("Disallow: /account");
-    expect(body).toContain("Disallow: /api/");
-    expect(body).toContain("Disallow: /auth/");
-  });
-
   test("calls out named AI crawlers explicitly", async () => {
     allowIndexing();
     const body = await robotsTxt.index().text();

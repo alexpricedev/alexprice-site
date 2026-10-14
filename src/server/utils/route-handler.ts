@@ -1,5 +1,4 @@
 import type { BunRequest } from "bun";
-import { jsonError } from "./response";
 
 type MethodHandlers = {
   GET?: (req: BunRequest) => Response | Promise<Response>;
@@ -43,7 +42,8 @@ const dispatch =
   };
 
 // HTML routes. The 405 body stays plain text — it is read by a person poking at
-// a URL, not by a program.
+// a URL, not by a program. Every route in this app is a GET, but a bare handler
+// in a Bun routes map answers *every* method, so pages still go through here.
 export function createRouteHandler(handlers: MethodHandlers) {
   return dispatch(
     handlers,
@@ -52,19 +52,5 @@ export function createRouteHandler(handlers: MethodHandlers) {
         status: 405,
         headers: allowHeader(handlers),
       }),
-  );
-}
-
-// JSON routes. Same dispatch, and the same `Allow` header — only the body
-// differs, so a caller that reaches `/api/*` with the wrong verb gets the error
-// envelope every other API failure uses rather than prose it can't parse.
-export function createApiRouteHandler(handlers: MethodHandlers) {
-  return dispatch(handlers, (req) =>
-    jsonError(
-      405,
-      "method_not_allowed",
-      `${req.method} is not supported on this resource.`,
-      { headers: allowHeader(handlers) },
-    ),
   );
 }

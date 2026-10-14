@@ -23,8 +23,10 @@ const CONTENT_SECURITY_POLICY = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "img-src 'self' data:",
-  "font-src 'self'",
-  "style-src 'self' 'unsafe-inline'",
+  // The two webfonts load from Google Fonts (see FONTS_HREF in layouts.tsx):
+  // gstatic.com serves the font files, googleapis.com the stylesheet.
+  "font-src 'self' https://fonts.gstatic.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "script-src 'self' 'unsafe-inline'",
   "connect-src 'self'",
   // Production only, like HSTS below: WebKit applies the upgrade to
@@ -35,18 +37,16 @@ const CONTENT_SECURITY_POLICY = [
 ].join("; ");
 
 // Deny every powerful feature we do not use; fullscreen stays available to our
-// own origin. Mirrors the specification.website lock-down baseline.
+// own origin. Features browsers have since retired (ambient-light-sensor,
+// battery, document-domain, execution-while-*, navigation-override, web-share)
+// are dropped rather than declared: an unknown feature name just logs a console
+// warning in every browser that has moved on.
 const PERMISSIONS_POLICY = [
   "accelerometer=()",
-  "ambient-light-sensor=()",
   "autoplay=()",
-  "battery=()",
   "camera=()",
   "display-capture=()",
-  "document-domain=()",
   "encrypted-media=()",
-  "execution-while-not-rendered=()",
-  "execution-while-out-of-viewport=()",
   "fullscreen=(self)",
   "geolocation=()",
   "gyroscope=()",
@@ -54,14 +54,12 @@ const PERMISSIONS_POLICY = [
   "magnetometer=()",
   "microphone=()",
   "midi=()",
-  "navigation-override=()",
   "payment=()",
   "picture-in-picture=()",
   "publickey-credentials-get=()",
   "screen-wake-lock=()",
   "sync-xhr=()",
   "usb=()",
-  "web-share=()",
   "xr-spatial-tracking=()",
 ].join(", ");
 

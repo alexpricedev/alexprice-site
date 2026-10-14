@@ -1,12 +1,5 @@
-import { runMigrations } from "./database/migrate";
-import { seedIfEmpty } from "./database/seed";
-import { setIpSource } from "./middleware/client-ip";
-import { adminRoutes } from "./routes/admin";
-import { apiRoutes } from "./routes/api";
 import { appRoutes } from "./routes/app";
 import { initAssets, warnOnMissingDevBundles } from "./services/assets";
-import { startCleanupSweep } from "./services/cleanup";
-import { closeDatabase } from "./services/database";
 import { log } from "./services/logger";
 import { validateEnv } from "./utils/env";
 import { render500 } from "./utils/errors";
@@ -19,23 +12,13 @@ import {
 import { registerShutdown } from "./utils/shutdown";
 
 validateEnv();
-await runMigrations();
-await seedIfEmpty();
 await initAssets();
 await warnOnMissingDevBundles();
-
-// Not awaited: the first sweep runs alongside the first requests rather than
-// delaying the listen.
-const stopSweep = startCleanupSweep();
 
 const server = Bun.serve({
   port: Number(process.env.PORT),
   idleTimeout: 30,
-  routes: secureRoutes({
-    ...appRoutes,
-    ...adminRoutes,
-    ...apiRoutes,
-  }),
+  routes: secureRoutes({ ...appRoutes }),
   async fetch(req) {
     return handleGuarded(req, handleFallback);
   },
@@ -52,10 +35,6 @@ const server = Bun.serve({
   },
 });
 
-// The rate limiter can't key on the socket address until it can reach
-// requestIP, which only exists on the server instance.
-setIpSource(server);
-
-registerShutdown({ stopSweep, server, db: { close: closeDatabase } });
+registerShutdown({ server });
 
 log.info("server", `Listening on port ${server.port}`);

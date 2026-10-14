@@ -8,15 +8,10 @@
       "Bash(bun run typecheck)",
       "Bash(bun run build)",
       "Bash(bun run test)",
-      "Bash(bun run test:*)",
-      "Bash(bun run bench:*)",
-      "Bash(bun run bench *)",
       "Bash(bun run wip:*)",
       "Bash(bun run wip *)",
       "Bash(bun audit)",
       "Bash(bun install)",
-      "Bash(bun dedupe --check)",
-      "Bash(bun pm licenses:*)",
       "Bash(bun outdated)"
     ]
   },

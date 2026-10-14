@@ -1,16 +1,6 @@
 [test]
-# test-env.ts pins every environment variable the suite needs and must run
-# first: a preload is the only place early enough to beat the values modules
-# capture at import time. See the file for why `.env.test` holds DATABASE_URL
-# and nothing else.
-preload = [
-  "./src/server/test-utils/test-env.ts",
-  "./src/client/test-utils/setup.ts",
-]
-coverage = true
-coverageReporter = ["text", "lcov"]
-coverageDirectory = "coverage"
-coveragePathIgnorePatterns = [
-  "**/test-utils/setup.ts",
-  "**/test-utils/test-env.ts",
-]
+# test-env.ts pins the environment every test file runs under. A preload is the
+# only place early enough: imports are hoisted above a file's body, so values
+# read at import time (APP_URL in services/seo.ts, for one) are captured before
+# a test's first line runs.
+preload = ["./src/server/test-utils/test-env.ts"]

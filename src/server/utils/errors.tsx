@@ -16,7 +16,7 @@ const renderError = (
   });
 
 // 404 — the requested resource does not exist. Correct status (never a soft 200),
-// with site navigation and a homepage link as the way forward.
+// with a homepage link as the way forward.
 export const render404 = (): Response =>
   renderError(
     <ErrorPage
@@ -41,7 +41,7 @@ export const render500 = (): Response =>
 
 // 503 — the site is intentionally offline for maintenance. Includes a
 // Retry-After header so clients and crawlers know when to return, and drops the
-// nav/home affordances since every route is offline.
+// home affordance since every route is offline.
 export const render503 = (retryAfterSeconds: number): Response =>
   renderError(
     <ErrorPage
@@ -49,7 +49,6 @@ export const render503 = (retryAfterSeconds: number): Response =>
       heading="We'll be right back"
       message="The site is offline for scheduled maintenance. Please check back shortly."
       showHome={false}
-      nav={false}
     />,
     503,
     { "Retry-After": String(retryAfterSeconds) },

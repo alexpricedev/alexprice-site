@@ -3,22 +3,15 @@ import { appOrigin } from "../utils/app-url";
 // Single source of truth for the site's public identity and SEO artefacts
 // (sitemap, structured data). Templates and controllers import from here so the
 // canonical host, name, and description can't drift across the codebase.
-//
-// The name and description are product identity, so they live here as constants.
-// The canonical origin is deployment config and was already in the environment as
-// APP_URL, so it derives from that instead — see siteUrl() below.
 
 // The origin every absolute URL is built from: canonicals, Open Graph tags, the
-// sitemap, robots.txt's Sitemap: line, and JSON-LD. Defaults to APP_URL's origin,
-// which is what keeps the canonical domain from drifting away from the domain
-// emailed links and CSRF origin validation use — a mismatch reads as cloaking to
-// Google. SITE_URL overrides it for the one case where the two legitimately
-// differ (marketing site on the apex, app on a subdomain).
+// sitemap, robots.txt's Sitemap: line, and JSON-LD. Defaults to APP_URL's origin.
+// SITE_URL overrides it for the case where the canonical domain and the deploy
+// domain legitimately differ.
 //
-// Read from process.env on every call (not captured at import) for the reason
-// authMode() gives in auth-mode.ts: imports are hoisted, so a module-level const
-// would freeze whatever the test preload happened to hold. Reduced to .origin so
-// a trailing slash or stray path can't double up in a generated URL.
+// Read from process.env on every call (not captured at import) so a value set
+// after the module loads still counts. Reduced to .origin so a trailing slash or
+// stray path can't double up in a generated URL.
 export const siteUrl = (): string => {
   const configured = process.env.SITE_URL?.trim();
   return configured ? new URL(configured).origin : appOrigin();
@@ -28,26 +21,28 @@ export const siteUrl = (): string => {
  * Whether search engines may index the site.
  *
  * Closed by default: the site stays out of Google unless `ALLOW_INDEXING=true`
- * is set explicitly, so a preview deploy, a staging host or a fork's first
- * Railway URL can't be crawled because nobody remembered to block it. Opening
- * indexing is one deliberate variable in one place, and every layer that speaks
- * to a crawler — robots.txt, the `X-Robots-Tag` on every response, the
- * `<meta name="robots">` in `layouts.tsx` — reads this rather than deciding for
- * itself.
+ * is set explicitly, so a preview deploy or a fork's first URL can't be crawled
+ * because nobody remembered to block it. Every layer that speaks to a crawler —
+ * robots.txt, the `X-Robots-Tag` on every response, the `<meta name="robots">`
+ * in `layouts.tsx` — reads this rather than deciding for itself.
  *
  * Anything other than exactly `true` reads as closed, including a typo: the
  * failure mode of a misspelt value should be a site that isn't indexed, not one
- * that is. Read per call for the reason `siteUrl()` gives above.
+ * that is.
  */
 export const indexingAllowed = (): boolean =>
   process.env.ALLOW_INDEXING === "true";
 
 export const SITE_NAME = "Alex Price";
-export const SITE_DESCRIPTION = "The personal site of Alex Price.";
+export const SITE_DESCRIPTION =
+  "Alex Price — helping startups build software factories: agent pipelines that turn tickets into reviewed pull requests, with humans at both ends.";
+export const SITE_TAGLINE =
+  "Helping teams build the factory that builds their software.";
 
-// Public, indexable routes included in the sitemap. Private or noindex routes
-// (/login, /admin), API endpoints, and auth callbacks are intentionally omitted.
-export const SITEMAP_PATHS = ["/", "/forms", "/todos"] as const;
+// Public, indexable routes included in the sitemap. Kept in sync with the route
+// table in routes/app.tsx by a drift test, so a new page can't silently go
+// unlisted.
+export const SITEMAP_PATHS = ["/", "/software-factory"] as const;
 
 // Absolute URL for a site-relative path. Exported so llms-txt.ts resolves against
 // the same origin rather than keeping its own copy of this line.
@@ -68,7 +63,7 @@ ${urls}
 // Named AI crawlers we call out explicitly in robots.txt so the allow posture
 // is unambiguous rather than only implied by the wildcard group. In robots.txt
 // a named user-agent group fully replaces the wildcard for that agent, so each
-// named group repeats the same Disallow rules.
+// named group repeats the same Allow rule.
 const AI_CRAWLERS = [
   "GPTBot",
   "OAI-SearchBot",
@@ -81,65 +76,43 @@ const AI_CRAWLERS = [
   "CCBot",
 ] as const;
 
-// Private surfaces kept out of every crawler's reach.
-const ROBOTS_DISALLOW = [
-  "/admin",
-  "/account",
-  "/api/",
-  "/auth/",
-  // Private even when TEAMS_ENABLED is off, where they 404 anyway.
-  "/team",
-  "/invites/",
-] as const;
-
 // Content-Signal (an emerging IETF AI Preferences / IAB Tech Lab proposal)
 // declares downstream-use consent explicitly for crawlers that honour it. It
 // follows indexingAllowed() rather than standing on its own: `search=yes`
-// alongside a site-wide `noindex` is two answers to one question, and the other
-// two axes fail closed for the reason indexingAllowed() is closed by default —
-// a preview, a staging box or a fork's first deploy should not be granting
-// consent to ground or train on its content because nobody set a variable.
+// alongside a site-wide `noindex` is two answers to one question.
 const contentSignal = (open: boolean): string =>
   open
     ? "Content-Signal: search=yes, ai-input=yes, ai-train=yes"
     : "Content-Signal: search=no, ai-input=no, ai-train=no";
 
-// Builds the /robots.txt body. The posture is deliberately open: search engines and the major AI crawlers are
-// all allowed, with only private surfaces disallowed.
+// Builds the /robots.txt body. Every page is public, so nothing is disallowed —
+// the posture differs only by the `Sitemap:` line and the Content-Signal values.
 //
 // Crawling stays allowed even when indexing is switched off, which looks
 // backwards and isn't. `noindex` is the thing that keeps a page out of the
-// index, and a crawler has to *fetch* a page to read it — a `Disallow: /`
-// would block the fetch and so disable the `X-Robots-Tag` and the meta tag
-// that do the actual work. It would also not prevent indexing on its own: a
-// URL that is linked from somewhere else gets indexed unfetched, as a bare
-// result with no title. So the closed posture differs by the `Sitemap:` line
-// and the Content-Signal values, and leaves the rest to `noindex`.
+// index, and a crawler has to *fetch* a page to read it — a `Disallow: /` would
+// block the fetch and so disable the `X-Robots-Tag` and the meta tag that do the
+// actual work.
 export const buildRobotsTxt = (): string => {
-  // Read once, so every line of one body answers from the same state.
   const open = indexingAllowed();
   const signal = contentSignal(open);
 
   const group = (agents: readonly string[]): string =>
-    [
-      ...agents.map((agent) => `User-agent: ${agent}`),
-      "Allow: /",
-      ...ROBOTS_DISALLOW.map((path) => `Disallow: ${path}`),
-      signal,
-    ].join("\n");
+    [...agents.map((agent) => `User-agent: ${agent}`), "Allow: /", signal].join(
+      "\n",
+    );
 
   return [
     ...(open
       ? [
           "# Search engines and AI crawlers are welcome.",
-          "# Only private surfaces are disallowed.",
+          "# Every page is public.",
         ]
       : [
           "# Indexing is switched off (ALLOW_INDEXING is not `true`). Crawling is",
           "# still allowed on purpose: every page and every response says",
           "# noindex, and a crawler has to fetch a page to be told that. The",
           "# Content-Signal below says no to search, grounding and training.",
-          "# See runbooks/SEO.md §1b.",
         ]),
     "",
     group(["*"]),
@@ -150,12 +123,10 @@ export const buildRobotsTxt = (): string => {
   ].join("\n");
 };
 
-// Web app manifest (spec: resilience/pwa-manifest). `name`/`short_name` follow
-// SITE_NAME so a fork is never stuck advertising "Billet" as its installed-app
-// name — updating the one constant renames it everywhere. Colours match the
-// dark theme (--color-bg in style.css / THEME_COLOR in layouts.tsx). The 512px
-// icon doubles as the maskable icon; swap in a purpose-built, safe-zone-padded
-// asset if you need edge-to-edge Android adaptive icons.
+// Web app manifest. `name`/`short_name` follow SITE_NAME so a rename is one edit.
+// The site is dark-only, so the colours match --bg from the dark palette in
+// base.css (and THEME_COLOR in layouts.tsx). The 512px icon doubles as the
+// maskable icon.
 export const buildWebManifest = (): string =>
   JSON.stringify({
     name: SITE_NAME,
@@ -164,8 +135,8 @@ export const buildWebManifest = (): string =>
     start_url: "/",
     scope: "/",
     display: "standalone",
-    theme_color: "#0a0a0b",
-    background_color: "#0a0a0b",
+    theme_color: "#1E1B2E",
+    background_color: "#1E1B2E",
     icons: [
       {
         src: "/android-chrome-192x192.png",
@@ -188,7 +159,7 @@ export const buildWebManifest = (): string =>
     ],
   });
 
-// Site-level JSON-LD (WebSite + Organization) injected into every public page's
+// Site-level JSON-LD (WebSite + Person) injected into every public page's
 // <head>. Gives search engines and AI agents a machine-readable description of
 // the site using the schema.org vocabulary.
 export const siteStructuredData = (): string => {
@@ -203,14 +174,14 @@ export const siteStructuredData = (): string => {
         url: `${site}/`,
         name: SITE_NAME,
         description: SITE_DESCRIPTION,
-        publisher: { "@id": `${site}/#organization` },
+        publisher: { "@id": `${site}/#person` },
       },
       {
-        "@type": "Organization",
-        "@id": `${site}/#organization`,
+        "@type": "Person",
+        "@id": `${site}/#person`,
         name: SITE_NAME,
         url: `${site}/`,
-        logo: absolute("/og-image.png"),
+        image: absolute("/og-image.png"),
       },
     ],
   });
