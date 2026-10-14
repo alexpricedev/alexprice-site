@@ -31,7 +31,7 @@ describe("Nav", () => {
     // itself is left outside it.
     const panel = html.slice(html.indexOf('id="nav-menu"'));
 
-    expect(panel).toContain('href="/stack"');
+    expect(panel).toContain('href="/todos"');
     expect(panel).toContain('href="/account"');
     expect(panel).toContain('action="/auth/logout"');
     expect(html.slice(0, html.indexOf('id="nav-menu"'))).toContain(

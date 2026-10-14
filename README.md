@@ -1,55 +1,6 @@
-<p align="center">
-  <img src="public/logo.svg" alt="Billet Logo" width="48" />
-</p>
+# Alex Price
 
-<h1 align="center">Billet</h1>
-
-<p align="center">
-  <b>Give your AI coding agents guardrails</b>
-  <br />
-  Server-rendered JSX, light-touch JS, custom CSS — one codebase, one deploy target.<br />
-  Deterministic templates with strong types that AI agents can reason about and test with confidence.
-</p>
-
-<p align="center">
-  <a href="https://bun.sh"><img src="https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white" alt="Bun" /></a>
-  <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals"><img src="https://img.shields.io/badge/JSX/TSX-20232a?style=for-the-badge&logo=javascript&logoColor=yellow" alt="JSX/TSX" /></a>
-  <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
-  <a href="https://railway.com?referralCode=XB1wns"><img src="https://img.shields.io/badge/Deploy%20on-Railway-131415?style=for-the-badge&logo=railway&logoColor=white" alt="Railway" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" /></a>
-</p>
-
-> **TLDR:** Full-stack TypeScript starter built for AI coding agents. Server-rendered JSX (not React), custom CSS, PostgreSQL via Bun — one process, one test runner, one deploy target. Ships with auth (magic-link or email+password, your pick), CSRF protection, rate limiting, auto-migrations, and 700+ tests. The architecture is deliberately simple (services → controllers → templates) so AI agents get fast, unambiguous feedback from strict types, zero-warning linting, and a test suite that runs in seconds. Deploy anywhere you can run `bun run start`.
->
-> — *Claude Opus 4.6*
-
-<p align="center"><a href="https://github.com/alexpricedev/Billet?tab=readme-ov-file#quick-start"><b>Get started →</b></a></p>
-
----
-
-## Why Billet?
-
-> **Billet** (noun): A semi-finished piece of steel, shaped and ready to be worked into something specific. Named for Sheffield — the Steel City, where crucible steel was invented.
-
-Left to their own choices, AI coding agents will reach for what they know best: React with Next.js. The result is a thick-frontend app split across client and server, locked into a specific ecosystem, requiring multiple test systems to simulate browser state, and unnecessarily complex and costly to deploy.
-
-Billet takes the opposite approach. It's a single-instance server-rendered app with light-touch client-side JavaScript. Templates are deterministic functions of their props — given the same input, they produce the same HTML. This makes them trivial to test in a single unified system without browser simulation. One codebase, one test runner, one deploy target.
-
-This isn't a limitation. It's a deliberate architectural choice that plays to AI's strengths: strong type information to reason about, functional input/output patterns, and a feedback loop (write code → run tests → see results) that works in seconds, not minutes.
-
-> 📝 For the longer story behind why Billet works this way — the fat front-end, RLS, and the case for a real server — read [**Boring on purpose**](https://alexprice.dev/writing/boring-on-purpose).
-
-### Capture your backpressure
-
-AI agents work best when they get told they're wrong immediately. Not by you — by the toolchain. Type errors, failing tests, lint warnings, broken builds — that's [backpressure](https://latentpatterns.com/principles), and it's the single most important thing you can invest in when working with agents. Every automated check that catches a mistake is one less time you have to context-switch back in to fix something a machine should have caught.
-
-When you do have to step in and rescue an agent, don't just fix the output and move on. Ask why it went wrong and close that gap. Add a type. Write a test. Tighten a schema. The goal isn't zero failures — it's zero repeat failures. Every rescue you engineer away is time you get back.
-
-Billet is built around this idea: strict TypeScript, zero-warning linting, deterministic templates, and a test suite that runs in seconds. The architecture itself is the feedback loop.
-
-### When Billet isn't the right fit
-
-Billet is built for server-rendered apps with light client-side interactivity. If your project needs a highly reactive, state-driven UI — real-time collaborative editing, complex drag-and-drop interfaces, rich data visualisations — you're better off with a full client-side framework like React or Svelte from the start. Billet lets you opt in to client-side frameworks per page, but if most of your pages need one, the thin-frontend approach is working against you rather than for you.
+A full-stack TypeScript app built with Bun.
 
 ---
 
@@ -130,117 +81,18 @@ parallel with a database per worker.
 
 ---
 
-## Built for AI Agents
-
-The "designed for AI agents" tagline is the reason Billet exists, so here's what that means in practice.
-
-### CLAUDE.md, rules and skills — the agent's guide
-
-The repo ships a [`CLAUDE.md`](CLAUDE.md) that holds only what an agent can't learn by reading the repo, plus path-scoped rules in `.claude/rules/` and a set of skills in `.claude/skills/`. `CLAUDE.md` is the gotchas: JSX with no hydration, why service tests mock the database module before importing, why `bun test` isn't the test command, where security headers actually come from. Guidance that only matters in one part of the tree lives in path-scoped rules under `.claude/rules/`, loaded when those files are opened, and everything procedural lives in skills that load on demand:
-
-| Skill | Loads when |
-|---|---|
-| `adding-a-feature` | Wiring a page, endpoint, or migration through every layer |
-| `writing-tests` | Adding or fixing a test — one reference per module type |
-| `verifying-changes` | Running lint, typecheck, and the test suite, and reading their failures |
-
-This split follows Anthropic's [context engineering guidance for Claude 5 models](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models): keep the always-loaded context small and specific to your codebase, and use progressive disclosure for the rest.
-
-### Why this architecture works for agents
-
-AI agents are good at following patterns with fast, unambiguous feedback. Billet is designed around that:
-
-- **Deterministic templates.** Given the same props, a template produces the same HTML. Agents can write a template, call `renderToString()`, and assert on the output — no browser, no async rendering, no timing issues.
-- **Strong types as context.** Types flow from service to controller to template. When an agent's code doesn't typecheck, it gets an error with a file path, line number, and expected type — enough to self-correct without human intervention.
-- **Fast feedback loops.** `bun run test` completes in seconds. `bun run check` (lint + typecheck) catches issues before they compound. Agents can write-test-fix in tight cycles.
-- **Separation of concerns.** Services own data, controllers orchestrate, templates render. Each layer is independently testable. An agent working on a controller doesn't need to understand the database schema — it works against typed service functions.
-- **Zero-ambiguity conventions.** File naming, export patterns, route registration — everything follows documented conventions. There's one right way to add a page, one right way to add an API endpoint, and it's written down.
-
-### The feedback stack
-
-Every layer catches a different class of error before a human has to:
-
-| Layer | What it catches |
-|---|---|
-| TypeScript strict mode | Type mismatches, missing properties, unused code |
-| Biome linting | Style violations, unsafe patterns, console usage |
-| Pre-commit hooks | Anything that slipped past the editor |
-| Test suite | Behavioural regressions, broken templates, bad responses |
-
-
-This is the [backpressure](#capture-your-backpressure) that keeps agents inside the guardrails.
-
-### Running several agents at once
-
-The usual way to parallelise agents is one git worktree each, and it has a sharp edge: worktrees share a single `.git` directory, and `refs/stash` lives there. The stash is one global stack across every worktree, so an agent that pops in its own checkout can silently walk off with work another agent pushed a moment ago.
-
-Billet closes that hole. `scripts/wip` snapshots to `refs/worktree/wip` — the one ref namespace git keeps per-worktree — so a snapshot is invisible to every other agent:
-
-```bash
-bun run wip save "trying the other approach"   # snapshot, working tree untouched
-bun run wip stash                              # snapshot, then revert tracked changes
-bun run wip list                               # this worktree's snapshots
-bun run wip restore                            # apply the newest, and keep it
-bun run wip drop                               # forget the newest
-```
-
-A `PreToolUse` hook in [`.claude/settings.json`](.claude/settings.json) denies `git stash` and points the agent at the table above, so this isn't a convention an agent can forget — it's enforced.
-
-The other thing worktrees share is everything in `.env`. [`.conductor/settings.toml`](.conductor/settings.toml) runs `scripts/workspace.ts provision` on setup, which gives each workspace its own port (`CONDUCTOR_PORT`), its own dev and test databases (`<base>-<workspace>`), and its own session cookie name — cookies aren't scoped by port, so two apps on localhost otherwise share one. The test database matters most: `cleanupTestData` truncates every table, so two agents on one `billet-test` fail each other's suites at random. `scripts/workspace.ts destroy` runs on archive and drops the pair, refusing any name that doesn't carry that workspace's slug. Both are no-ops in cloud workspaces. If you don't use Conductor, run `bun run scripts/workspace.ts provision` with `CONDUCTOR_WORKSPACE_NAME` and `CONDUCTOR_PORT` set, or ignore it — the defaults are unchanged.
-
----
-
-## Built to a public standard
-
-[**specification.website**](https://specification.website) is an open, platform-agnostic checklist of the technical features a good website should have — 168 specs across foundations, SEO, accessibility, security, performance, and more. Billet works through it section by section, so the boring-but-critical baseline is in place before you write a line of product code.
-
-| Section | What Billet covers |
-|---|---|
-| **Foundations** | Doctype, charset, viewport, canonical URLs, Open Graph, favicons, theme-color |
-| **SEO** | robots.txt, XML sitemap, JSON-LD, per-page metadata, an explicit indexing policy |
-| **Accessibility** | Semantic landmarks, labelled forms, focus rings, reduced motion, captioned tables |
-| **Security** | Security headers on every response, a Content Security Policy, HSTS, security.txt, Subresource Integrity, Clear-Site-Data |
-| **Agent readiness** | An llms.txt index, AI-crawler rules and Content-Signal in robots.txt, machine-readable Link headers, structured data, stable URLs |
-| **Performance** | Brotli and gzip compression, fingerprinted immutable assets, ETag revalidation with 304s, preconnect resource hints, minified bundles |
-
-[Read the full standard →](https://specification.website)
-
----
-
 ## Quick Start
 
-You'll need [Bun](https://bun.sh) and a local [PostgreSQL](https://www.postgresql.org/) instance running. If you need help getting PostgreSQL set up, ask Claude — it'll walk you through the install for your OS.
-
-Click **[Use this template](https://github.com/new?template_name=Billet&template_owner=alexpricedev)** on GitHub to create your own repo, then:
+You'll need [Bun](https://bun.sh) and a local [PostgreSQL](https://www.postgresql.org/) instance running.
 
 ```bash
-git clone <your-new-repo-url>
-cd <your-project>
+git clone git@github.com:alexpricedev/alexprice-site.git
+cd alexprice-site
 bun install
-```
-
-### First-time setup
-
-Open [`START_PROMPT.md`](START_PROMPT.md) with your AI coding agent. It will walk through creating your `.env` files, renaming the project, stripping the Billet starter content, and verifying everything works.
-
-Once setup is complete you can delete `START_PROMPT.md`.
-
-### Manual setup
-
-If you'd prefer to set up manually:
-
-```bash
-cp .env.example .env
-bun run generate:pepper      # copy the output into CRYPTO_PEPPER in .env
-```
-
-Add your `DATABASE_URL` to `.env` (e.g. `postgresql://localhost/myapp`), then:
-
-```bash
 bun run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) — migrations run automatically on startup.
+The `.env` is already set up in the original checkout. On a fresh clone, copy `.env.example` to `.env`, run `bun run generate:pepper` for `CRYPTO_PEPPER`, and set `DATABASE_URL`. Migrations run automatically on startup; the app serves on the `PORT` in `.env`.
 
 ---
 
@@ -370,7 +222,7 @@ curl -X POST http://localhost:3000/api/todos \
 
 ## Works well with
 
-- **[Conductor](https://conductor.build)** — runs several coding agents in parallel, one git worktree each. Billet ships a [`.conductor/settings.toml`](.conductor/settings.toml) that gives every workspace its own port, dev database, test database, and session cookie name on setup, and drops the databases again on archive, so parallel agents can't truncate each other's test data or fight over port 3000. None of it is required: the scripts no-op when `CONDUCTOR_PORT` is unset, and `scripts/wip` is plain `git worktree`, so the same protections work under any agent harness.
+- **[Conductor](https://conductor.build)** — runs several coding agents in parallel, one git worktree each. The repo ships a [`.conductor/settings.toml`](.conductor/settings.toml) that gives every workspace its own port, dev database, test database, and session cookie name on setup, and drops the databases again on archive, so parallel agents can't truncate each other's test data or fight over port 3000. None of it is required: the scripts no-op when `CONDUCTOR_PORT` is unset, and `scripts/wip` is plain `git worktree`, so the same protections work under any agent harness.
 
 A couple of small, zero-dependency packages built alongside Billet that drop straight in:
 
@@ -381,7 +233,7 @@ A couple of small, zero-dependency packages built alongside Billet that drop str
 
 ## Upgrading a fork
 
-Billet is used by cloning or forking, so there's no package manager to warn you about a breaking
+This app is a fork of [Billet](https://github.com/alexpricedev/Billet), which is used by cloning or forking, so there's no package manager to warn you about a breaking
 change. Releases are tagged, and [CHANGELOG.md](CHANGELOG.md) records what a fork has to change in
 its own code before merging a new major version. Read it before pulling upstream.
 
@@ -402,7 +254,7 @@ Contributions are welcome! Please open issues or PRs.
 
 ## Deploy
 
-Billet is a single Bun process — no containers, no serverless adapters, no platform-specific runtime. Anywhere you can run `bun run start`, it'll work: Railway, Fly.io, Render, a VPS, or your own machine.
+This app is a single Bun process — no containers, no serverless adapters, no platform-specific runtime. Anywhere you can run `bun run start`, it'll work: Railway, Fly.io, Render, a VPS, or your own machine.
 
 ### Railway
 
@@ -490,7 +342,7 @@ Prefer the dashboard? These are the same values, to set by hand in the service's
 
 ### Database
 
-Billet uses PostgreSQL through Bun's built-in `Bun.SQL` — no ORM, no driver dependency. Migrations run automatically on server startup — pending migrations are applied before the server accepts requests. If a migration fails, the server won't start (fail-safe).
+This app uses PostgreSQL through Bun's built-in `Bun.SQL` — no ORM, no driver dependency. Migrations run automatically on server startup — pending migrations are applied before the server accepts requests. If a migration fails, the server won't start (fail-safe).
 
 A lightweight CLI is also available for manual operations:
 
@@ -506,10 +358,4 @@ If you don't need a database, remove the `src/server/database/` and `src/server/
 
 ## License
 
-MIT — free for personal and commercial use.
-
----
-
-<p align="center">
-  <i>Made with ❤️ in Sheffield, UK</i>
-</p>
+This project is not currently licensed for public use. All rights reserved.

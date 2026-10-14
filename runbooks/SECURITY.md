@@ -79,7 +79,7 @@ The policy is enforcing and host-allowlist based. Current directives:
 ```
 default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none';
 img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline';
-script-src 'self' 'unsafe-inline' https://unpkg.com;
+script-src 'self' 'unsafe-inline';
 connect-src 'self'; upgrade-insecure-requests
 ```
 
@@ -110,8 +110,7 @@ because the page ships inline JSON-LD in
 protection. The hardening path (a follow-up, not done here) is nonce +
 `'strict-dynamic'`: generate a per-request nonce, stamp it on every inline and
 first-party `<script>`, add `'nonce-…' 'strict-dynamic'` to `script-src`, and
-drop `'unsafe-inline'`. The cleanest enabler is self-hosting lottie so there is
-no CDN script to allow.
+drop `'unsafe-inline'`.
 
 **No `'unsafe-eval'`, by design.** The client's reactive layer
 (`src/client/reactive/`) binds state to markup through `data-*` attributes that
@@ -158,28 +157,22 @@ attacker-initiated posts. The header names live in `src/shared/protocol.ts`.
 
 ## 4. Subresource Integrity (third-party scripts)
 
-The homepage loads the lottie animation library from unpkg with a pinned version
-and a cryptographic hash in
-[`layouts.tsx`](../src/server/components/layouts.tsx):
+The site loads no third-party scripts today. Any you add must pin an exact
+version and carry an `integrity` hash, plus a `script-src` entry in
+[`security-headers.ts`](../src/server/utils/security-headers.ts):
 
 ```html
-<script async
-  src="https://unpkg.com/lottie-web@5.13.0/build/player/lottie_light.min.js"
+<script async src="https://cdn.example/lib@1.2.3/lib.min.js"
   integrity="sha384-…" crossorigin="anonymous"></script>
 ```
 
-If unpkg ever serves a tampered file, the hash won't match and the browser
+If the CDN ever serves a tampered file, the hash won't match and the browser
 refuses to run it. **SRI requires an exact version** — never point `integrity`
-at a floating range like `@5`.
-
-**Bumping the version.** Recompute the hash for the new file:
+at a floating range like `@1`. Compute the hash with:
 
 ```bash
-curl -sL "https://unpkg.com/lottie-web@<NEW>/build/player/lottie_light.min.js" \
-  | openssl dgst -sha384 -binary | openssl base64 -A
+curl -sL "<script url>" | openssl dgst -sha384 -binary | openssl base64 -A
 ```
-
-Update both the `src` version and the `integrity` value.
 
 ## 5. Deploy & transport layer (host, not code)
 
@@ -257,8 +250,8 @@ want a spotless console.
 - **Reporting API (`Reporting-Endpoints` + CSP `report-to`)** — needs a collector
   endpoint to receive violation reports. Add one to observe CSP breakage in the
   wild before tightening the policy.
-- **COEP / CORP** — `Cross-Origin-Embedder-Policy` would break the unpkg
-  script, and a strict `Cross-Origin-Resource-Policy` would block social scrapers
+- **COEP / CORP** — `Cross-Origin-Embedder-Policy` would break any future
+  third-party script, and a strict `Cross-Origin-Resource-Policy` would block social scrapers
   from fetching the OG image. Only `Cross-Origin-Opener-Policy` is set. Revisit
   COEP if you ever need cross-origin isolation (e.g. `SharedArrayBuffer`).
 - **Trusted Types** (`require-trusted-types-for 'script'`) — pairs naturally with

@@ -71,11 +71,11 @@ export default defineRailway(() => {
       // `${{RAILWAY_PUBLIC_DOMAIN}}` is resolved by Railway at deploy time, which
       // is what breaks the chicken-and-egg — APP_URL needs the domain, and the
       // domain doesn't exist until the service does.
-      APP_NAME: "Billet",
+      APP_NAME: "Alex Price",
       APP_URL: "https://${{RAILWAY_PUBLIC_DOMAIN}}",
       EMAIL_PROVIDER: "console",
       FROM_EMAIL: "noreply@example.com",
-      FROM_NAME: "Billet",
+      FROM_NAME: "Alex Price",
       RESEND_API_KEY: preserve(),
 
       // Optional — each one changes behaviour only when set.
@@ -95,5 +95,5 @@ export default defineRailway(() => {
     },
   });
 
-  return project("my-app", { resources: [app, db] });
+  return project("alexprice-site", { resources: [app, db] });
 });

@@ -19,7 +19,6 @@
 
 /* Page styles */
 @import "./pages/home.css";
-@import "./pages/stack.css";
 @import "./pages/forms.css";
 @import "./pages/todos.css";
 @import "./pages/login.css";

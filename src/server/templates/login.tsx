@@ -48,11 +48,11 @@ export const Login = ({
 
   return (
     <AuthPage
-      title="Login - Billet"
+      title="Login - Alex Price"
       description={
         password
-          ? "Log in to Billet with your email and password."
-          : "Log in to Billet with a magic link — no passwords to remember."
+          ? "Log in to Alex Price with your email and password."
+          : "Log in to Alex Price with a magic link — no passwords to remember."
       }
       canonicalPath="/login"
       heading="Sign in to your account"

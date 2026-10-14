@@ -29,8 +29,8 @@ export const ResetPassword = ({
   challenge,
 }: ResetPasswordProps) => (
   <AuthPage
-    title="Choose a new password - Billet"
-    description="Set a new password for your Billet account."
+    title="Choose a new password - Alex Price"
+    description="Set a new password for your account."
     canonicalPath="/reset-password"
     heading="Choose a new password"
     subtitle="This will sign you out everywhere else"

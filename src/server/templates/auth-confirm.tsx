@@ -19,16 +19,16 @@ export interface AuthConfirmProps {
 
 const COPY = {
   "sign-in": {
-    title: "Confirm sign in - Billet",
-    description: "Finish signing in to Billet.",
+    title: "Confirm sign in - Alex Price",
+    description: "Finish signing in to Alex Price.",
     canonicalPath: CALLBACK_PATH,
     heading: "Confirm sign in",
     subtitle: "Your link works once, so we ask before spending it",
     submit: "Sign in",
   },
   "email-verification": {
-    title: "Confirm your email - Billet",
-    description: "Confirm your email address for Billet.",
+    title: "Confirm your email - Alex Price",
+    description: "Confirm your email address for Alex Price.",
     canonicalPath: VERIFY_PATH,
     heading: "Confirm your email",
     subtitle: "Your link works once, so we ask before spending it",

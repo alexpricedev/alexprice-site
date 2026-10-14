@@ -38,11 +38,11 @@ export const Signup = ({
 
   return (
     <AuthPage
-      title="Sign up - Billet"
+      title="Sign up - Alex Price"
       description={
         password
-          ? "Create a Billet account with an email and password."
-          : "Create a Billet account — we'll email you a link to get started."
+          ? "Create an account with an email and password."
+          : "Create an account — we'll email you a link to get started."
       }
       canonicalPath="/signup"
       heading="Create your account"

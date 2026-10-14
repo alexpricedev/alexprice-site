@@ -42,13 +42,12 @@ export const siteUrl = (): string => {
 export const indexingAllowed = (): boolean =>
   process.env.ALLOW_INDEXING === "true";
 
-export const SITE_NAME = "Billet";
-export const SITE_DESCRIPTION =
-  "Guardrails for your AI coding agents — a full-stack TypeScript starter on Bun";
+export const SITE_NAME = "Alex Price";
+export const SITE_DESCRIPTION = "The personal site of Alex Price.";
 
 // Public, indexable routes included in the sitemap. Private or noindex routes
 // (/login, /admin), API endpoints, and auth callbacks are intentionally omitted.
-export const SITEMAP_PATHS = ["/", "/stack", "/forms", "/todos"] as const;
+export const SITEMAP_PATHS = ["/", "/forms", "/todos"] as const;
 
 // Absolute URL for a site-relative path. Exported so llms-txt.ts resolves against
 // the same origin rather than keeping its own copy of this line.
@@ -105,8 +104,7 @@ const contentSignal = (open: boolean): string =>
     ? "Content-Signal: search=yes, ai-input=yes, ai-train=yes"
     : "Content-Signal: search=no, ai-input=no, ai-train=no";
 
-// Builds the /robots.txt body. Billet is built for AI coding agents, so the
-// posture is deliberately open: search engines and the major AI crawlers are
+// Builds the /robots.txt body. The posture is deliberately open: search engines and the major AI crawlers are
 // all allowed, with only private surfaces disallowed.
 //
 // Crawling stays allowed even when indexing is switched off, which looks
@@ -133,8 +131,8 @@ export const buildRobotsTxt = (): string => {
   return [
     ...(open
       ? [
-          "# Billet is built for AI coding agents, so search engines and AI crawlers",
-          "# are welcome. Only private surfaces are disallowed.",
+          "# Search engines and AI crawlers are welcome.",
+          "# Only private surfaces are disallowed.",
         ]
       : [
           "# Indexing is switched off (ALLOW_INDEXING is not `true`). Crawling is",

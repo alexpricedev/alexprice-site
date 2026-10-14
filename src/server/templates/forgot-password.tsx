@@ -31,8 +31,8 @@ export const ForgotPassword = ({
   showConsoleHint,
 }: ForgotPasswordProps) => (
   <AuthPage
-    title="Reset your password - Billet"
-    description="Request a link to reset your Billet password."
+    title="Reset your password - Alex Price"
+    description="Request a link to reset your password."
     canonicalPath="/forgot-password"
     heading="Reset your password"
     subtitle="We'll email you a link to choose a new one"

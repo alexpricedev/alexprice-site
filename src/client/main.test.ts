@@ -6,10 +6,9 @@ describe("main page router", () => {
     delete document.body.dataset.page;
   });
 
-  test("calls home init when data-page is home", async () => {
+  test("boots without throwing on the home page", async () => {
     document.body.dataset.page = "home";
     await import("./main");
-    // Home init is a no-op, just verify it doesn't throw
     expect(true).toBe(true);
   });
 });

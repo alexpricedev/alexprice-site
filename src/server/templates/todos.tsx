@@ -48,7 +48,7 @@ export const Todos = (props: TodosProps): JSX.Element => {
 
   return (
     <Layout
-      title="Todos - Billet"
+      title="Todos - Alex Price"
       description="The classic todo list, server-rendered: plain forms that work without JavaScript, enhanced in place with CSRF-protected fragments."
       canonicalPath="/todos"
       name="todos"

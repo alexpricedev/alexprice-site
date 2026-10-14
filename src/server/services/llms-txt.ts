@@ -18,14 +18,7 @@ const PAGES: LlmsPage[] = [
   {
     path: "/",
     title: "Home",
-    description:
-      "Overview of the Billet stack and the production web defaults it ships out of the box.",
-  },
-  {
-    path: "/stack",
-    title: "The Stack",
-    description:
-      "The technologies and architecture Billet is built on — Bun, server-rendered JSX, PostgreSQL, and a small reactive layer.",
+    description: "The personal site of Alex Price.",
   },
   {
     path: "/forms",
@@ -62,8 +55,6 @@ export const buildLlmsTxt = (): string =>
     `# ${SITE_NAME}`,
     "",
     `> ${SITE_DESCRIPTION}`,
-    "",
-    "Billet is a server-rendered TypeScript web app (Bun with JSX templates, no client framework) that ships correct web defaults — foundations, SEO, accessibility, security, and agent readiness — so coding agents can build features on a solid baseline.",
     "",
     "## Pages",
     "",

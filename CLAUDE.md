@@ -239,7 +239,7 @@ Password hashing lives in `src/server/utils/crypto.ts` and is deliberately *not*
 Every response gets its headers from `secureRoutes` / `handleGuarded` in
 `src/server/utils/security-headers.ts`. Controllers set only content-specific headers.
 
-The CSP script allowlist is `'self' 'unsafe-inline' https://unpkg.com`. Any new
+The CSP script allowlist is `'self' 'unsafe-inline'`. Any new
 third-party script needs the CSP entry, an SRI `integrity` hash, and ideally a `preconnect` in
 `layouts.tsx` — otherwise it is silently blocked in the browser but passes every test.
 

@@ -20,10 +20,10 @@ export const VerifyResult = ({ status }: VerifyResultProps) => (
   <AuthPage
     title={
       status === "verified"
-        ? "Email confirmed - Billet"
-        : "Confirmation failed - Billet"
+        ? "Email confirmed - Alex Price"
+        : "Confirmation failed - Alex Price"
     }
-    description="The result of confirming your Billet email address."
+    description="The result of confirming your email address."
     canonicalPath="/auth/verify"
     heading={
       status === "verified" ? "Email confirmed" : "That link didn't work"

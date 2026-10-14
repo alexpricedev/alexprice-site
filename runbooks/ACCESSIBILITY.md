@@ -86,7 +86,7 @@ Keep the baseline intact by following these when you add pages:
 - **Images** — every `<img>` needs an `alt` attribute (empty `alt=""` for purely
   decorative images). Decorative inline SVGs get `aria-hidden="true"`.
 - **Motion** — respect `prefers-reduced-motion`. The global CSS block covers
-  CSS animation/transition; for JS-driven animation (like the Lottie hero),
+  CSS animation/transition; for JS-driven animation,
   gate autoplay on `matchMedia("(prefers-reduced-motion: reduce)")` as `home.ts`
   does.
 - **Media** — video you add needs synchronised captions; audio-only content

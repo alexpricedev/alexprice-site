@@ -55,9 +55,9 @@ export const Account = ({
   showConsoleHint,
 }: AccountProps) => (
   <Layout
-    title="Account - Billet"
+    title="Account - Alex Price"
     name="account"
-    description="Manage your Billet account."
+    description="Manage your account."
     canonicalPath="/account"
     user={user}
     csrfToken={csrfToken}

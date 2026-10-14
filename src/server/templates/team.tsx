@@ -66,7 +66,7 @@ const roleBadge = (role: OrgRole) => <Badge variant={role}>{role}</Badge>;
 
 export const Team = (props: TeamProps) => (
   <Layout
-    title="Team - Billet"
+    title="Team - Alex Price"
     name="team"
     description="Manage your team members and invitations."
     canonicalPath="/team"

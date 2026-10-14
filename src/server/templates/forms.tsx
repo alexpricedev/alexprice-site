@@ -35,8 +35,8 @@ export const Forms = ({
 
   return (
     <Layout
-      title="Forms - Billet"
-      description="Server-rendered form patterns in Billet — CSRF protection, validation, and post-redirect-get flash messages."
+      title="Forms - Alex Price"
+      description="Server-rendered form patterns — CSRF protection, validation, and post-redirect-get flash messages."
       canonicalPath="/forms"
       name="forms"
       user={user}

@@ -40,7 +40,7 @@ export const AcceptInvite = ({
   challenge,
 }: AcceptInviteProps) => (
   <AuthPage
-    title="Accept your invitation - Billet"
+    title="Accept your invitation - Alex Price"
     description="Join a team you've been invited to."
     canonicalPath="/invites/accept"
     heading={
