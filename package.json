@@ -25,16 +25,16 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.6.6",
+    "@biomejs/biome": "2.6.7",
     "@types/bun": "1.4.4",
     "@types/node": "^26.6.6",
     "husky": "9.1.7",
-    "railway": "^3.16.0",
+    "railway": "^3.17.0",
     "typescript": "^7.0.2"
   },
   "dependencies": {
     "gsap": "^3.15.1",
     "preact": "^11.2.0",
-    "preact-render-to-string": "^6.8.2"
+    "preact-render-to-string": "^6.8.3"
   }
 }
